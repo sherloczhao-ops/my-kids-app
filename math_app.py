@@ -38,7 +38,7 @@ st.markdown("""
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 .mode-title { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 10px; }
-.huge-text { font-size: 65px !important; font-weight: 900; color: #333; margin: 10px 0; letter-spacing: 5px; }
+.huge-text { font-size: 55px !important; font-weight: 900; color: #333; margin: 10px 0; letter-spacing: 5px; }
 
 /* 选项按钮：粉红色 */
 div[data-testid="stHorizontalBlock"] {
