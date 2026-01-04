@@ -197,7 +197,7 @@ if st.session_state.get('show_error'):
 # 题目区域
 st.markdown(f'''
 <div class="question-container">
-    <div class="mode-title">✨ 成语填空挑战 ✨</div>
+    <div class="mode-title">✨ 小王大挑战 ✨</div>
     <div class="huge-text">{st.session_state.current_idiom}</div>
     <div style="color:#AAA; font-size:14px; margin-top:10px;">请选出正确的字补全成语</div>
 </div>
