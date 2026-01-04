@@ -223,7 +223,7 @@ for i, opt in enumerate(st.session_state.options):
             st.session_state.show_error = True
             st.rerun()
 
-# 侧边栏重置
-if st.sidebar.button("🏆 清空最高纪录"):
+st.markdown("<br>", unsafe_allow_html=True)
+if st.button("🏆 清空最高纪录", key="reset_btn", use_container_width=True):
     st.session_state.high_score = 0
     st.rerun()
