@@ -2,47 +2,79 @@ import streamlit as st
 import random
 import time
 
-# --- 1. 样式增强：极致 Apple 视觉适配 ---
+# --- 1. 样式与美化：适配 iPhone 15/S25 的 Apple 风格 ---
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"], [data-testid="stHeader"] { background-color: #FFFBE6 !important; }
+/* 背景色：奶黄色 */
+[data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+    background-color: #FFFBE6 !important;
+}
+
+/* 顶部成绩单 */
 .score-board {
-    background-color: white; border-radius: 20px; padding: 10px; margin-bottom: 15px;
-    display: flex; justify-content: space-around; align-items: center;
-    border: 3px solid #A3D9A5; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    background-color: white;
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 3px solid #A3D9A5;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 .score-box { text-align: center; }
-.score-label { font-size: 12px; color: #888; }
-.score-num { font-size: 20px; font-weight: bold; color: #FF6F61; }
-.stButton > button[key^="nav_"] {
-    border-radius: 50px !important; height: 40px !important; font-size: 15px !important;
-    border: 2px solid #E0E0E0 !important; background-color: white !important; color: #666 !important;
-}
-.stButton > button[key*="active"] { background-color: #A3D9A5 !important; color: white !important; border: none !important; }
+.score-label { font-size: 14px; color: #888; }
+.score-num { font-size: 24px; font-weight: bold; color: #FF6F61; }
+
+/* 题目卡片：加厚黄色边框 */
 .question-container {
-    background: white; border: 8px solid #FFB800; border-radius: 40px;
-    padding: 25px 10px; text-align: center; margin: 10px auto; max-width: 350px;
+    background: white;
+    border: 8px solid #FFB800;
+    border-radius: 40px;
+    padding: 40px 15px;
+    text-align: center;
+    margin: 15px auto;
+    max-width: 350px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
-.huge-text { font-size: 60px !important; font-weight: 900; color: #333; margin: 10px 0; letter-spacing: 2px; }
-.stButton > button[key^="btn_"] {
-    background-color: #FF85A1 !important; color: white !important; border-radius: 12px !important;
-    height: 60px !important; font-size: 24px !important; font-weight: bold !important;
-    border: none !important; box-shadow: 0 4px 0 #FF477E !important; margin-bottom: 8px !important;
+.mode-title { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 10px; }
+.huge-text { font-size: 65px !important; font-weight: 900; color: #333; margin: 10px 0; letter-spacing: 5px; }
+
+/* 选项按钮：粉红色 */
+div[data-testid="stHorizontalBlock"] {
+    max-width: 350px;
+    margin: 0 auto;
 }
-.funny-error { font-size: 70px; text-align: center; animation: shake 0.5s infinite; position: absolute; width: 100%; top: 40%; z-index: 99; }
+.stButton > button {
+    background-color: #FF85A1 !important;
+    color: white !important;
+    border-radius: 15px !important;
+    height: 70px !important;
+    font-size: 28px !important;
+    font-weight: bold !important;
+    border: none !important;
+    box-shadow: 0 5px 0 #FF477E !important;
+    margin-bottom: 12px !important;
+}
+.stButton > button:active {
+    box-shadow: none !important;
+    transform: translateY(5px) !important;
+}
+
+/* 搞怪表情 */
 @keyframes shake {
-    0%, 100% { transform: translate(0,0); }
-    25% { transform: translate(-5px,0); }
-    75% { transform: translate(5px,0); }
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    20% { transform: translate(-3px, 0px) rotate(-1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+.funny-error { font-size: 100px; text-align: center; animation: shake 0.5s infinite; margin-top: 20px;}
+
 footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. 500个核心成语词库 ---
-if 'score' not in st.session_state: st.session_state.score = 0
-if 'high_score' not in st.session_state: st.session_state.high_score = 0
-
+# --- 2. 500个成语大词库 ---
 IDIOM_DB = [
     "自强不息", "坚持不懈", "全力以赴", "一心一意", "五彩缤纷", "半途而废", "大公无私", "画龙点睛", "名落孙山", "胸有成竹",
     "一见如故", "井底之蛙", "拔苗助长", "狐假虎威", "亡羊补牢", "守株待兔", "惊弓之鸟", "画蛇添足", "对牛弹琴", "盲人摸象",
@@ -95,59 +127,62 @@ IDIOM_DB = [
     "宁死不屈", "抛砖引玉", "平易近人", "迫不及待", "齐头并进", "杞人忧天", "前所未有", "轻而易举", "情不自禁", "全力以赴",
     "全力支持", "全神贯注", "拳不离手", "惹是生非", "人云亦云", "忍俊不禁", "如愿以求", "三思而后行", "杀鸡儆猴", "深谋远虑",
     "神机妙算", "事半功倍", "事与愿违", "守口如瓶", "水到渠成", "水涨船高", "四面楚歌", "肆无忌惮", "随波逐流", "随心所欲",
-    "谈笑风生", "叹为观止", "提心吊胆", "天经地义", "天衣无缝", "挑拨离间", "挺身而出", "同心协力", "推陈出新", "脱口而出",
+    "谈笑风生", "叹为观止", "提心胆战", "天经地义", "天衣无缝", "挑拨离间", "挺身而出", "同心协力", "推陈出新", "脱口而出",
     "微不足道", "危言耸听", "唯利是图", "温故知新", "无微不至", "无懈可击", "洗心革面", "鲜为人知", "相提并论", "小心翼翼",
     "心悦诚服", "欣欣向荣", "新陈代谢", "兴致勃勃", "胸怀大志", "袖手旁观", "悬崖勒马", "循序渐进", "鸦雀无声", "言简意赅",
-    "奄奄一息", "眼见为实", "扬长避短", "摇摇欲坠", "一败涂地", "一尘不染", "一鼓作气", "一见如故", "一劳永逸", "一鸣惊人",
-    "一目十行", "一窍不通", "一如既往", "一丝不苟", "一塌糊涂", "一心一意", "一针见血", "怡然自得", "义不容辞", "异口同声",
+    "奄奄一息", "眼见为实", "扬长避短", "摇摇欲坠", "一败涂地", "一尘不染", "一鼓作气", "一劳永逸", "一鸣惊人",
+    "一目十行", "一窍不通", "一如既往", "一丝不苟", "一塌糊涂", "一针见血", "怡然自得", "义不容辞", "异口同声",
     "因材施教", "饮水思源", "迎刃而解", "勇往直前", "优胜劣汰", "由浅入深", "与众不同", "再接再厉", "斩钉截铁", "朝气蓬勃",
     "争先恐后", "知难而退", "纸上谈兵", "志在四方", "众目睽睽", "助人为乐", "自给自足", "自取灭亡", "自私自利", "自相矛盾"
 ]
 
-def refresh_q(mode):
-    st.session_state.answered = False
+# --- 3. 游戏核心逻辑 ---
+
+if 'score' not in st.session_state: st.session_state.score = 0
+if 'high_score' not in st.session_state: st.session_state.high_score = 0
+
+def generate_question():
     st.session_state.show_error = False
-    if mode == "math":
-        op = random.choice(['+', '-'])
-        if op == '+':
-            n1 = random.randint(1, 8); n2 = random.randint(1, 10-n1)
-            ans = n1 + n2
-        else:
-            n1 = random.randint(2, 10); n2 = random.randint(1, n1)
-            ans = n1 - n2
-        st.session_state.q_text = f"{n1} {op} {n2} ="
-        st.session_state.q_ans = str(ans)
-        opts = {str(ans)}
-        while len(opts) < 4: opts.add(str(random.randint(0, 10)))
-        st.session_state.q_opts = sorted(list(opts))
-    else:
-        idiom = random.choice(IDIOM_DB)
-        blank_idx = random.randint(0, 3)
-        target_char = idiom[blank_idx]
-        display_idiom = list(idiom)
-        display_idiom[blank_idx] = "_"
-        st.session_state.q_text = "".join(display_idiom)
-        st.session_state.q_ans = target_char
-        all_chars = "".join(IDIOM_DB)
-        opts = {target_char}
-        while len(opts) < 4:
-            random_char = random.choice(all_chars)
-            if random_char != target_char: opts.add(random_char)
-        opts_list = list(opts)
-        random.shuffle(opts_list)
-        st.session_state.q_opts = opts_list
+    st.session_state.answered = False
+    
+    # 随机选成语
+    idiom = random.choice(IDIOM_DB)
+    # 随机选一个位置挖空
+    blank_idx = random.randint(0, 3)
+    answer = idiom[blank_idx]
+    
+    # 题目文本
+    display_text = list(idiom)
+    display_text[blank_idx] = "_"
+    st.session_state.current_idiom = "".join(display_text)
+    st.session_state.answer = answer
+    
+    # 生成选项
+    all_chars = "".join(IDIOM_DB)
+    options = {answer}
+    while len(options) < 4:
+        rand_char = random.choice(all_chars)
+        if rand_char != answer:
+            options.add(rand_char)
+    
+    opt_list = list(options)
+    random.shuffle(opt_list)
+    st.session_state.options = opt_list
 
-if 'game_mode' not in st.session_state:
-    st.session_state.game_mode = "数学"
-    refresh_q("math")
+# 初始化题目
+if 'current_idiom' not in st.session_state:
+    generate_question()
 
+# --- 4. 界面绘制 ---
+
+# 成绩单
 st.markdown(f'''
 <div class="score-board">
     <div class="score-box">
-        <div class="score-label">⭐ 当前得分</div>
+        <div class="score-label">⭐ 连对分数</div>
         <div class="score-num">{st.session_state.score}</div>
     </div>
-    <div style="width: 1px; height: 25px; background-color: #EEE;"></div>
+    <div style="width: 2px; height: 30px; background-color: #EEE;"></div>
     <div class="score-box">
         <div class="score-label">🏆 最高纪录</div>
         <div class="score-num">{st.session_state.high_score}</div>
@@ -155,47 +190,40 @@ st.markdown(f'''
 </div>
 ''', unsafe_allow_html=True)
 
-nav_c1, nav_c2 = st.columns(2)
-with nav_c1:
-    m_active = "_active" if st.session_state.game_mode == "数学" else ""
-    if st.button("🔢 算术模式", key=f"nav_math{m_active}", use_container_width=True):
-        st.session_state.game_mode = "数学"
-        refresh_q("math")
-        st.rerun()
-with nav_c2:
-    w_active = "_active" if st.session_state.game_mode == "成语" else ""
-    if st.button("📚 成语模式", key=f"nav_word{w_active}", use_container_width=True):
-        st.session_state.game_mode = "成语"
-        refresh_q("成语")
-        st.rerun()
-
+# 搞怪表情
 if st.session_state.get('show_error'):
-    st.markdown(f'<p class="funny-error">{random.choice(["🤪", "👻", "🙊", "👽"])}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="funny-error">{random.choice(["🤪", "👻", "🙊", "👽", "💩"])}</p>', unsafe_allow_html=True)
 
+# 题目区域
 st.markdown(f'''
 <div class="question-container">
-    <div class="mode-label">Q) {st.session_state.game_mode}模式 Q</div>
-    <div class="huge-text">{st.session_state.q_text}</div>
-    <div style="color:#888; font-size:12px;">宝贝加油 💪</div>
+    <div class="mode-title">✨ 成语填空挑战 ✨</div>
+    <div class="huge-text">{st.session_state.current_idiom}</div>
+    <div style="color:#AAA; font-size:14px; margin-top:10px;">请选出正确的字补全成语</div>
 </div>
 ''', unsafe_allow_html=True)
 
-col_left, col_right = st.columns(2)
-for i, opt in enumerate(st.session_state.q_opts):
-    target_col = col_left if i < 2 else col_right
-    if target_col.button(str(opt), key=f"btn_{opt}_{i}", use_container_width=True):
-        if str(opt) == str(st.session_state.q_ans):
+# 按钮区域
+col1, col2 = st.columns(2)
+for i, opt in enumerate(st.session_state.options):
+    target_col = col1 if i < 2 else col2
+    if target_col.button(opt, key=f"btn_{i}", use_container_width=True):
+        if opt == st.session_state.answer:
+            # 答对了
             st.session_state.score += 1
-            if st.session_state.score > st.session_state.high_score: st.session_state.high_score = st.session_state.score
+            if st.session_state.score > st.session_state.high_score:
+                st.session_state.high_score = st.session_state.score
             st.balloons()
             time.sleep(1.2)
-            refresh_q("math" if st.session_state.game_mode == "数学" else "成语")
+            generate_question()
             st.rerun()
         else:
+            # 答错了
             st.session_state.score = 0
             st.session_state.show_error = True
             st.rerun()
 
-if st.sidebar.button("清空最高纪录"):
+# 侧边栏重置
+if st.sidebar.button("🏆 清空最高纪录"):
     st.session_state.high_score = 0
     st.rerun()
